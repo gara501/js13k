@@ -7,13 +7,20 @@ ren.renderRect = (ctx, element) => {
   }
 };
 
-ren.renderHero = (ctx, hero, resources) => {
+ren.renderHero = (ctx, hero, image) => {
   if (!hero.destroyed) {
-    ctx.drawImage(resources.shipImage(),  
-	    50, 25, 20,20, //src coords 
+    ctx.drawImage(image,  
+	    0, 0, 64, 64, //src coords 
 	    hero.x, hero.y, hero.width, hero.height //dst coords 
 	  );
   }
+}
+
+ren.renderBullet = (ctx, bullet, image) => {
+  ctx.drawImage(image,  
+    0, 0, 64, 64, //src coords 
+    hero.x, hero.y, hero.width, hero.height //dst coords 
+  );
 }
 
 module.exports = ren;

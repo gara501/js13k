@@ -4,8 +4,8 @@ module.exports.hero = (canvas) => {
   let el = {
     x: 70,
     y: canvas.height - 100,
-    width: 46,
-    height: 46,
+    width: 64,
+    height: 64,
     speed: 500,
     color: 'rgba(236, 94, 103, 1)',
     collision: false,

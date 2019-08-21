@@ -7,7 +7,7 @@ var config = require('./config');
 var render = require('./render');
 var alerts = require('./alerts');
 var utils = require('./utils');
-let resources = loadResources();
+let heroImage = loadResource('hero');
 
 var canvas = document.createElement('canvas');
 canvas.width = 800;
@@ -152,7 +152,7 @@ loop.start(function (dt) {
     
     // Renders
     //render.renderRect(ctx, hero);
-    render.renderHero(ctx, hero, resources);
+    render.renderHero(ctx, hero, heroImage);
     // render.renderRect(ctx, enemy);
 
     if (shoot && isShooting) { 
@@ -172,13 +172,9 @@ function centerToElement(el1, el2) {
   return el1;
 }
 
-function loadResources() {
-  let resources = {
-    shipImage: () => {
-      ship_image = new Image(); 
-      ship_image.src = "assets/hero.png"; 
-      return ship_image;
-    }
-  }
-  return resources;
+function loadResource(item) {
+  var path = 'assets/';
+  image = new Image();
+  image.src = path + item + ".png"; 
+  return image;
 }
