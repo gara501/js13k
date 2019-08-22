@@ -41,7 +41,7 @@ collider.boundsCollision = (el, canvas) => {
   }
   if (el.y <= 0) {
     el.y = 0;
-  } else if ((el.y+el.height) >= canvas.height) {
+  } else if ((el.y + el.height) >= canvas.height) {
     el.y = canvas.height - el.height;
   }
 }

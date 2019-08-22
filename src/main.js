@@ -8,6 +8,10 @@ var render = require('./render');
 var alerts = require('./alerts');
 var utils = require('./utils');
 let heroImage = loadResource('hero');
+let bulletImage = loadResource('bullet');
+let wallImage = loadResource('wall');
+let wallEnemyImage = loadResource('wallenemy');
+var beamSound = new Audio("assets/beam.mp3");
 
 var canvas = document.createElement('canvas');
 canvas.width = 800;
@@ -24,24 +28,21 @@ var ctx = canvas.getContext('2d');
 let tempCounter = 0;
 let shootY = 0;
 
+var audioContext = null;
+var oscillator = null;
+const length = 2;
+const eps = 0.01;
+
 // Elements
 var hero = elements.hero(canvas);
 var enemy = elements.enemy(canvas, 'wasp');
-let bullet =  elements.bullet(hero, 'wave');
+let bullet =  elements.bullet(hero, 'linear');
 let bulletEnemy = elements.bullet(enemy);
 
 let wall = [];
 let wallEnemy = [];
-for (let i=0; i <= parseInt(canvas.height/20); i++) {
-  posy = (i === 0 ? 0: i * 20);
-  let block = elements.wall(0, posy, 'yellow');
-  let blockEnemy = elements.wall(canvas.width-50, posy, 'red');
-  wall.push(block);
-  wallEnemy.push(blockEnemy);
-  wallCounter +=1;
-  wallEnemyCounter +=1;
-}
-
+buildWalls();
+//playMusic('')
 // game loop
 loop.start(function (dt) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -50,7 +51,8 @@ loop.start(function (dt) {
   } else {
     collider.boundsCollision(hero, canvas);
     collider.boundsCollision(enemy, canvas);
-
+    renderWalls(bullet, wallEnemy, 'enemy');
+    renderWalls(bullet, wall, 'player');
     // update player movements
     /*
     if (key.isDown(key.LEFT)) {
@@ -77,10 +79,11 @@ loop.start(function (dt) {
     if (key.isDown(key.SPACE)) {
       shoot = true;
       if (shootY === 0) {
-        shootY = hero.y + (hero.height/2);
+        shootY = hero.y + (hero.height/4);
       }
       if (!isShooting) {
-        shootY = hero.y + (hero.height/2);
+        beam();
+        shootY = hero.y + (hero.height/4);
         centerToElement(bullet, hero);
         
         if ((bullet.x > canvas.width)) {
@@ -93,8 +96,8 @@ loop.start(function (dt) {
     // Player bullet
     if (shoot) {
       if (bullet.name === 'linear') {
-        bullet.x += bullet.speed * dt;
-        bullet.y = hero.y + (hero.height/2) - (bullet.height/2);
+        bullet.x += bullet.speed * dt;      
+        bullet.y = shootY;
       }
       if (bullet.name === 'wave') {
         bullet.x += bullet.speed * dt;
@@ -108,6 +111,7 @@ loop.start(function (dt) {
 
     if (bullet.x > 0 && bullet.x <= canvas.width) {
       isShooting = true;
+      
     } else {
       isShooting = false;
     }
@@ -131,32 +135,20 @@ loop.start(function (dt) {
       enemy.x -= (enemy.speed / 60);
     }
 
-    // Wall
-    for(let block of wall) {
-      render.renderRect(ctx, block);
-      //if (collider.collision(bullet, bullet)) {
-      //  block.collision = true;
-     //   utils.destroy(block);
-      //}
+    if (wallEnemyCounter <= 1) {
+      // Todo: next level
+      buildWalls();
+      console.log('LEVEL UP')
     }
-
-    for(let block of wallEnemy) {
-      render.renderRect(ctx, block);
-      if (collider.collision(bullet, block)) {      
-        block.collision = true;
-        utils.destroy(block);
-        wallEnemyCounter -=1;
-        console.log('WALL COUNTER', wallEnemyCounter);
-      }
-    }
+  
     
     // Renders
     //render.renderRect(ctx, hero);
-    render.renderHero(ctx, hero, heroImage);
+    render.renderSprite(ctx, {x:0, y:0, width:59, height:29}, hero, heroImage);
     // render.renderRect(ctx, enemy);
 
     if (shoot && isShooting) { 
-      render.renderRect(ctx, bullet);
+      render.renderSprite(ctx, {x:0, y:0, width:20, height:20}, bullet, bulletImage);
     }
 
     if (config.game.lifes === 0) {
@@ -177,4 +169,66 @@ function loadResource(item) {
   image = new Image();
   image.src = path + item + ".png"; 
   return image;
+}
+
+function buildWalls() {
+  for (let i=0; i <= parseInt(canvas.height/20); i++) {
+    posy = (i === 0 ? 0: i * 20);
+    let block = elements.wall(0, posy, 'yellow');
+    let blockEnemy = elements.wall(canvas.width-16, posy, 'red');
+    wall.push(block);
+    wallEnemy.push(blockEnemy);
+    wallCounter +=1;
+    wallEnemyCounter +=1;
+  }
+}
+
+function renderWalls(bullet, wall, type) {
+
+  for (let i=0; i <= wall.length -1; i++) {
+    image = (type === 'enemy' ? wallEnemyImage : wallImage);
+    render.renderSprite(ctx, {x:0, y:0, width:16, height:16},  wall[i], image);
+    if (collider.collision(bullet, wall[i])) {    
+      wall[i].collision = true;
+      utils.destroy(wall[i]);
+      if (type === 'enemy') {
+        wallEnemyCounter -=1;
+      } else {
+        wallCounter -=1;
+      }
+      console.log('WALL COUNTER', wallEnemyCounter);
+    }
+  }
+}
+
+function playMusic(state) {
+  var music = [
+    [20, 4], [16, 4], [10, 8], [5, 4], [20, 8], [0, 16], [40, 4], [45, 8], [20, 8], [40, 4], [20, 8], [40, 8], [50, 4], [5, 2], [20, 8], [40, 4], [40, 8], [0, 4], [0, 4], [20, 4], [2,  4], [20, 8], [40, 4], [40, 8], [2, 4], [0, 4], [20, 4], [0,  4], [20, 8], [40, 4], [40, 8], [2, 4], [0, 4], [20, 4], [0,  4],[20, 8], [40, 4], [40, 8], [2, 4], [0, 4], [20, 4], [0,  4],
+  ];
+
+  getOrCreateContext();
+  oscillator.start(0);
+  var time = audioContext.currentTime + eps;
+  music.forEach(note => {
+    const freq = Math.pow(2, (note[0]-69)/12)*440;
+    oscillator.frequency.setTargetAtTime(0, time - eps, 0.001);
+    oscillator.frequency.setTargetAtTime(freq, time, 0.001);
+    time += length / note[1];
+  });
+}
+
+function getOrCreateContext() {
+  if (!audioContext) {
+    audioContext = new AudioContext();
+    oscillator = audioContext.createOscillator();
+    oscillator.connect(audioContext.destination);
+  }
+  return audioContext;
+}
+
+function beam() {
+  
+  if (beamSound.duration > 0 &&  beamSound.readyState > 2) {
+    beamSound.play();
+  }
 }
