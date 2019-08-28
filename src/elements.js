@@ -2,8 +2,8 @@ var rand = require('./rand');
 
 module.exports.hero = (canvas) => {
   let el = {
-    x: 70,
-    y: canvas.height - 100,
+    x: 30,
+    y: canvas.height - 50,
     width: 59,
     height: 29,
     speed: 500,
@@ -22,38 +22,50 @@ module.exports.hero = (canvas) => {
 module.exports.enemy = (canvas, type) => {
   let el = {};
   switch (type) {
-    case 'ant':
+    case 'first':
       el = {
-        x: canvas.width - 50,
+        x: canvas.width - 70,
         y: rand.int(canvas.height),
-        width: 20,
-        height: 20,
-        speed: 200,
-        color: 'green',
+        width: 50,
+        height: 34,
+        speed: 300,
+        life: 20,
         collision: false,
-        destroyed: false
+        destroyed: false, 
+        update:(heroY) => {
+          setTimeout(() => {
+            el.y -= heroY;
+          }, 500)
+          
+        },
+        shoot: () => {
+          var shootRand = rand.int(1000);
+          setTimeout(() => {
+            
+          }, shootRand)
+        }
       }
       break;
-    case 'bee':
+    case 'second':
       el = {
         x: canvas.width - 50,
         y: rand.int(canvas.height),
         width: 20,
         height: 30,
         speed: 400,
-        color: 'yellow',
+        life: 40,
         collision: false,
         destroyed: false
       }
       break;
-    case 'wasp':
+    case 'third':
       el = {
         x: canvas.width - 50,
         y: rand.int(canvas.height),
         width: 10,
         height: 10,
         speed: 700,
-        color: 'red',
+        life: 100,
         collision: false,
         destroyed: false
       }
@@ -84,6 +96,7 @@ module.exports.bullet = (shooter, type) => {
         width: 10,
         height: 10,
         speed: 1000,
+        frames: 4,
         color: 'rgba(255, 255, 255, 1)',
         collision: false,
         name: 'linear',
@@ -98,6 +111,7 @@ module.exports.bullet = (shooter, type) => {
         height: 20,
         speed: 1000,
         name: 'wave',
+        frames: 4,
         color: 'rgba(111, 94, 103, 1)',
         collision: false,
         destroyed: false

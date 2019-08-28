@@ -8,17 +8,39 @@ var render = require('./render');
 var alerts = require('./alerts');
 var utils = require('./utils');
 let heroImage = loadResource('hero');
-let bulletImage = loadResource('bullet');
+let enemyImage = loadResource('enemy1');
+let bulletImage = loadResource('beamSprite');
 let wallImage = loadResource('wall');
 let wallEnemyImage = loadResource('wallenemy');
 var beamSound = new Audio("assets/beam.mp3");
-
 var canvas = document.createElement('canvas');
 canvas.width = 800;
 canvas.height = 600;
 canvas.style.backgroundColor = '#000';
+
+var pre = document.createElement('pre');
+pre.textContent = ` 
+_|          _|    _|_|    _|        _|          _|_|_|  
+_|          _|  _|    _|  _|        _|        _|        
+_|    _|    _|  _|_|_|_|  _|        _|          _|_|    
+  _|  _|  _|    _|    _|  _|        _|              _|  
+    _|  _|      _|    _|  _|_|_|_|  _|_|_|_|  _|_|_|    
+                                                        
+`;
+document.body.appendChild(pre);
 document.body.appendChild(canvas);
 
+let heroShoot = {
+  shoot: false,
+  isShooting: false,
+  initialY: 0
+};
+
+let enemyShoot = {
+  shoot: false,
+  isShooting: false,
+  initialY: 0
+}
 let shoot = false;
 let isShooting = false;
 let wallCounter = 0;
@@ -27,6 +49,7 @@ let gameOver = false;
 var ctx = canvas.getContext('2d');
 let tempCounter = 0;
 let shootY = 0;
+let shootEnemyY = 0;
 
 var audioContext = null;
 var oscillator = null;
@@ -35,15 +58,24 @@ const eps = 0.01;
 
 // Elements
 var hero = elements.hero(canvas);
-var enemy = elements.enemy(canvas, 'wasp');
+var enemy = elements.enemy(canvas, 'first');
 let bullet =  elements.bullet(hero, 'linear');
-let bulletEnemy = elements.bullet(enemy);
+let bulletEnemy = elements.bullet(enemy, 'linear');
 
 let wall = [];
 let wallEnemy = [];
+let randomEnemyPosition = 0;
 buildWalls();
+
+var frameIndex = 1;
 //playMusic('')
 // game loop
+
+// Enemy Movement
+setInterval(() => {
+  randomEnemyPosition = rand.int(100);
+}, 1000)
+
 loop.start(function (dt) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (gameOver) {
@@ -77,31 +109,30 @@ loop.start(function (dt) {
       }
     }
     if (key.isDown(key.SPACE)) {
-      shoot = true;
-      if (shootY === 0) {
-        shootY = hero.y + (hero.height/4);
+      heroShoot.shoot = true;
+      if (heroShoot.initialY === 0) {
+        heroShoot.initialY = hero.y + (hero.height/4);
       }
-      if (!isShooting) {
+      if (!heroShoot.isShooting) {
         beam();
-        shootY = hero.y + (hero.height/4);
+        heroShoot.initialY = hero.y + (hero.height/4);
         centerToElement(bullet, hero);
         
         if ((bullet.x > canvas.width)) {
           centerToElement(bullet, hero);
         }
       }
-    
     }
     
     // Player bullet
-    if (shoot) {
+    if (heroShoot.shoot) {
       if (bullet.name === 'linear') {
         bullet.x += bullet.speed * dt;      
-        bullet.y = shootY;
+        bullet.y = heroShoot.initialY;
       }
       if (bullet.name === 'wave') {
         bullet.x += bullet.speed * dt;
-        bullet.y = Math.sin(bullet.x) * 20 + shootY;
+        bullet.y = Math.sin(bullet.x) * 20 + heroShoot.initialY;
 
         if (bullet.x > (canvas.width)) {
           bullet.x = canvas.width+10;
@@ -109,11 +140,30 @@ loop.start(function (dt) {
       }
     }
 
+    // Enemy Bullet
+    var enemyShootTime = rand.int(dt*1000);
+    if ((dt*1000) % 10 === 0) {
+      enemyShoot.shoot = true;
+    }
+
+    if (enemyShoot.shoot) {
+      if (bulletEnemy.name === 'linear') {
+        bulletEnemy.x += bulletEnemy.speed * dt;      
+        bulletEnemy.y = enemyShoot.initialY;
+      }
+    }
+
+
     if (bullet.x > 0 && bullet.x <= canvas.width) {
-      isShooting = true;
-      
+      heroShoot.isShooting = true;
     } else {
-      isShooting = false;
+      heroShoot.isShooting = false;
+    }
+
+    if (bulletEnemy.x > 0 && bulletEnemy.x <= canvas.width) {
+      enemyShoot.isShooting = true;
+    } else {
+      enemyShoot.isShooting = false;
     }
     
     if (!hero.collision) {
@@ -129,10 +179,19 @@ loop.start(function (dt) {
       enemy.collision = true;
     }
     
-    if (enemy.collision) {
-      utils.destroy(enemy);
+    // Enemy Movement
+    console.log(randomEnemyPosition);
+    if (randomEnemyPosition % 2 === 0) {
+      enemy.y -= enemy.speed * dt;
     } else {
-      enemy.x -= (enemy.speed / 60);
+      enemy.y += enemy.speed * dt;
+    }
+    
+    
+    if (enemy.collision) {
+      //utils.destroy(enemy);
+    } else {
+      //enemy.y -= (enemy.speed / 60);
     }
 
     if (wallEnemyCounter <= 1) {
@@ -143,12 +202,33 @@ loop.start(function (dt) {
   
     
     // Renders
-    //render.renderRect(ctx, hero);
-    render.renderSprite(ctx, {x:0, y:0, width:59, height:29}, hero, heroImage);
-    // render.renderRect(ctx, enemy);
-
+    render.renderSprite(ctx, { 
+      posx:0, 
+      posy:0, 
+      posWidth:59, 
+      posHeight:29,
+      el: hero,
+      image: heroImage
+    });
+    render.renderSprite(ctx, {
+      posx:0,
+      posy:0,
+      posWidth:59,
+      posHeight:34,
+      el: enemy,
+      image: enemyImage,
+      rotation: {
+        value: 180
+      }
+    });
+    
     if (shoot && isShooting) { 
-      render.renderSprite(ctx, {x:0, y:0, width:20, height:20}, bullet, bulletImage);
+      //render.renderSprite(ctx, {x:0, y:0, width:19, height:5}, bullet, bulletImage);
+      if (frameIndex == bullet.frames) {
+        frameIndex = 1;
+      }
+      render.renderSpriteSheet(ctx, {x:0, y:0, width:19, height:5}, bullet, bulletImage, frameIndex);
+      frameIndex++;
     }
 
     if (config.game.lifes === 0) {
@@ -187,7 +267,14 @@ function renderWalls(bullet, wall, type) {
 
   for (let i=0; i <= wall.length -1; i++) {
     image = (type === 'enemy' ? wallEnemyImage : wallImage);
-    render.renderSprite(ctx, {x:0, y:0, width:16, height:16},  wall[i], image);
+    render.renderSprite(ctx, { 
+      posx:0, 
+      posy:0, 
+      posWidth: 16, 
+      posHeight:16,
+      el: wall[i],
+      image: image
+    });
     if (collider.collision(bullet, wall[i])) {    
       wall[i].collision = true;
       utils.destroy(wall[i]);
