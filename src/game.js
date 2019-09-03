@@ -20,21 +20,13 @@ export default class Game {
     this.gameHeight = gameHeight;
     this.gamestate = GAMESTATE.MENU;
     this.ball = new Ball(this);
-    //this.ballUpperLeft = new BallUpperLeft(this, {x: 1, y: 2});
-    this.leftBalls = [];
-    //this.ballUpperRight = new BallUpperRight(this);
+    this.ballUpperLeft = new BallUpperLeft(this, {x: 1, y: 2});
+    this.ballUpperRight = new BallUpperRight(this);
     this.paddle = new World(this);
     this.gameObjects = [];
     this.lives = 20;
 
     this.currentLevel = 0;
-    for (let i = 1; i<= Math.floor(Math.random() * 10) + 1; i++) {
-      let randomX = Math.floor(Math.random() * this.gameWidth/2) + 1;
-      let randomY = Math.floor(Math.random() * this.gameHeight/2) + 1;
-      let ballItem = new BallUpperLeft(this, {x: randomX, y: randomY});
-      this.leftBalls.push(ballItem);
-    }
-    console.log(this.leftBalls);
 
     new InputHandler(this.paddle, this);
   }
@@ -75,16 +67,11 @@ export default class Game {
       object.update(deltaTime)
     );
 
-    [...this.leftBalls].forEach(object =>
-      object.update(deltaTime)
-    );
-
     //this.bricks = this.bricks.filter(brick => !brick.markedForDeletion);
   }
 
   draw(ctx) {
     [...this.gameObjects].forEach(object => object.draw(ctx));
-    [...this.leftBalls].forEach(object => object.draw(ctx));
 
     if (this.gamestate === GAMESTATE.PAUSED) {
       ctx.rect(0, 0, this.gameWidth, this.gameHeight);

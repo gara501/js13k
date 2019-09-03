@@ -145,19 +145,26 @@ function () {
       x: game.gameWidth / 2 - this.width / 2,
       y: game.gameHeight - this.height
     };
+    this.core = {
+      radius: 50,
+      position: {
+        x: game.gameWidth / 2,
+        y: game.gameHeight / 2
+      }
+    };
     this.sides = {
       upperLeft: {
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         position: {
-          x: game.gameWidth / 2 - this.width / 2,
+          x: game.gameWidth / 2 - this.width,
           y: game.gameHeight / 2 - this.height
         },
         backgroundColor: '#FF0000'
       },
       upperRight: {
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         position: {
           x: game.gameWidth / 2,
           y: game.gameHeight / 2 - this.height
@@ -165,20 +172,20 @@ function () {
         backgroundColor: '#FFD700'
       },
       lowerLeft: {
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         position: {
-          x: game.gameWidth / 2 - this.width / 2,
-          y: game.gameHeight / 2 - this.height / 2
+          x: game.gameWidth / 2 - this.width,
+          y: game.gameHeight / 2
         },
         backgroundColor: '#008000'
       },
       lowerRight: {
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         position: {
           x: game.gameWidth / 2,
-          y: game.gameHeight / 2 - this.height / 2
+          y: game.gameHeight / 2
         },
         backgroundColor: '#1E90FF'
       }
@@ -233,9 +240,13 @@ function () {
     value: function draw(ctx) {
       for (var item in this.sides) {
         ctx.fillStyle = this.sides[item].backgroundColor;
-        console.log(this.sides[item]);
         ctx.fillRect(this.sides[item].position.x, this.sides[item].position.y, this.sides[item].width, this.sides[item].height);
       }
+
+      ctx.beginPath();
+      ctx.arc(this.core.position.x, this.core.position.y, this.core.radius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = 'white';
+      ctx.fill();
     }
   }, {
     key: "update",
@@ -261,19 +272,19 @@ var InputHandler = function InputHandler(paddle, game) {
 
   document.addEventListener("keydown", function (event) {
     switch (event.keyCode) {
-      case 37:
+      case 81:
         paddle.hitUpperLeft();
         break;
 
-      case 39:
+      case 65:
         paddle.hitLowerLeft();
         break;
 
-      case 38:
+      case 87:
         paddle.hitUpperRight();
         break;
 
-      case 40:
+      case 83:
         paddle.hitLowerRight();
         break;
 
@@ -288,19 +299,19 @@ var InputHandler = function InputHandler(paddle, game) {
   });
   document.addEventListener("keyup", function (event) {
     switch (event.keyCode) {
-      case 37:
+      case 81:
         paddle.releasePaddle('upperLeft');
         break;
 
-      case 39:
+      case 65:
         paddle.releasePaddle('lowerLeft');
         break;
 
-      case 38:
+      case 87:
         paddle.releasePaddle('upperRight');
         break;
 
-      case 40:
+      case 83:
         paddle.releasePaddle('lowerRight');
         break;
     }
@@ -618,26 +629,16 @@ function () {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.gamestate = GAMESTATE.MENU;
-    this.ball = new _ball.default(this); //this.ballUpperLeft = new BallUpperLeft(this, {x: 1, y: 2});
-
-    this.leftBalls = []; //this.ballUpperRight = new BallUpperRight(this);
-
+    this.ball = new _ball.default(this);
+    this.ballUpperLeft = new _ballUpperLeft.default(this, {
+      x: 1,
+      y: 2
+    });
+    this.ballUpperRight = new _ballUpperRight.default(this);
     this.paddle = new _world.default(this);
     this.gameObjects = [];
     this.lives = 20;
     this.currentLevel = 0;
-
-    for (var i = 1; i <= Math.floor(Math.random() * 10) + 1; i++) {
-      var randomX = Math.floor(Math.random() * this.gameWidth / 2) + 1;
-      var randomY = Math.floor(Math.random() * this.gameHeight / 2) + 1;
-      var ballItem = new _ballUpperLeft.default(this, {
-        x: randomX,
-        y: randomY
-      });
-      this.leftBalls.push(ballItem);
-    }
-
-    console.log(this.leftBalls);
     new _input.default(this.paddle, this);
   }
 
@@ -665,10 +666,6 @@ function () {
 
       _toConsumableArray(this.gameObjects).forEach(function (object) {
         return object.update(deltaTime);
-      });
-
-      _toConsumableArray(this.leftBalls).forEach(function (object) {
-        return object.update(deltaTime);
       }); //this.bricks = this.bricks.filter(brick => !brick.markedForDeletion);
 
     }
@@ -676,10 +673,6 @@ function () {
     key: "draw",
     value: function draw(ctx) {
       _toConsumableArray(this.gameObjects).forEach(function (object) {
-        return object.draw(ctx);
-      });
-
-      _toConsumableArray(this.leftBalls).forEach(function (object) {
         return object.draw(ctx);
       });
 
@@ -781,7 +774,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62555" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63312" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

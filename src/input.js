@@ -2,19 +2,19 @@ export default class InputHandler {
   constructor(paddle, game) {
     document.addEventListener("keydown", event => {
       switch (event.keyCode) {
-        case 37:
+        case 81:
           paddle.hitUpperLeft();
           break;
 
-        case 39:
+        case 65:
           paddle.hitLowerLeft();
           break;
 
-        case 38:
+        case 87:
           paddle.hitUpperRight();
           break;
         
-        case 40:
+        case 83:
           paddle.hitLowerRight();
           break;
 
@@ -30,19 +30,19 @@ export default class InputHandler {
 
     document.addEventListener("keyup", event => {
       switch (event.keyCode) {
-        case 37:
+        case 81:
           paddle.releasePaddle('upperLeft');
           break;
 
-        case 39:
+        case 65:
           paddle.releasePaddle('lowerLeft');
           break;
         
-        case 38:
+        case 87:
           paddle.releasePaddle('upperRight');
           break;
 
-        case 40:
+        case 83:
           paddle.releasePaddle('lowerRight');
           break;
       }
