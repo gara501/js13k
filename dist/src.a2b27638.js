@@ -272,19 +272,19 @@ var InputHandler = function InputHandler(paddle, game) {
 
   document.addEventListener("keydown", function (event) {
     switch (event.keyCode) {
-      case 81:
+      case 65:
         paddle.hitUpperLeft();
         break;
 
-      case 65:
+      case 74:
         paddle.hitLowerLeft();
         break;
 
-      case 87:
+      case 83:
         paddle.hitUpperRight();
         break;
 
-      case 83:
+      case 75:
         paddle.hitLowerRight();
         break;
 
@@ -299,19 +299,19 @@ var InputHandler = function InputHandler(paddle, game) {
   });
   document.addEventListener("keyup", function (event) {
     switch (event.keyCode) {
-      case 81:
+      case 65:
         paddle.releasePaddle('upperLeft');
         break;
 
-      case 65:
+      case 74:
         paddle.releasePaddle('lowerLeft');
         break;
 
-      case 87:
+      case 83:
         paddle.releasePaddle('upperRight');
         break;
 
-      case 83:
+      case 75:
         paddle.releasePaddle('lowerRight');
         break;
     }
@@ -577,6 +577,130 @@ function () {
 }();
 
 exports.default = BallUpperRight;
+},{"./collisionDetection":"src/collisionDetection.js"}],"src/canon.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _collisionDetection = require("./collisionDetection");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Canon =
+/*#__PURE__*/
+function () {
+  function Canon(game, name) {
+    _classCallCheck(this, Canon);
+
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameHeight;
+    this.game = game;
+    this.width = 20;
+    this.height = 20;
+    this.position = {
+      x: 0,
+      y: 0
+    };
+    this.name = name;
+    this.backgroundColor = '#ccc';
+    this.configureCanon(this.name);
+  }
+
+  _createClass(Canon, [{
+    key: "configureCanon",
+    value: function configureCanon(name) {
+      switch (name) {
+        case 'up1':
+          this.backgroundColor = '#FF0000';
+          this.position = {
+            x: this.gameWidth / 2 - (50 + this.width / 2),
+            y: 0
+          };
+          break;
+
+        case 'up2':
+          this.backgroundColor = '#FFD700';
+          this.position = {
+            x: this.gameWidth / 2 + (50 - this.width / 2),
+            y: 0
+          };
+          break;
+
+        case 'right1':
+          this.backgroundColor = '#FFD700';
+          this.position = {
+            x: this.gameWidth - this.width,
+            y: this.gameHeight / 3 + 50
+          };
+          break;
+
+        case 'right2':
+          this.backgroundColor = '#1E90FF';
+          this.position = {
+            x: this.gameWidth - this.width,
+            y: this.gameHeight / 3 + 150
+          };
+          break;
+
+        case 'down1':
+          this.backgroundColor = '#008000';
+          this.position = {
+            x: this.gameWidth / 2 - (50 + this.width / 2),
+            y: this.gameHeight - this.height
+          };
+          break;
+
+        case 'down2':
+          this.backgroundColor = '#1E90FF';
+          this.position = {
+            x: this.gameWidth / 2 + (50 - this.width / 2),
+            y: this.gameHeight - this.height
+          };
+          break;
+
+        case 'left1':
+          this.backgroundColor = '#FF0000';
+          this.position = {
+            x: 0,
+            y: this.gameHeight / 3 + 50
+          };
+          break;
+
+        case 'left2':
+          this.backgroundColor = '#008000';
+          this.position = {
+            x: 0,
+            y: this.gameHeight / 3 + 150
+          };
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      console.log('DRAW', this.position.x, this.position.y, this.width, this.height, this.name);
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
+  }, {
+    key: "update",
+    value: function update(deltaTime) {}
+  }]);
+
+  return Canon;
+}();
+
+exports.default = Canon;
 },{"./collisionDetection":"src/collisionDetection.js"}],"src/game.js":[function(require,module,exports) {
 "use strict";
 
@@ -594,6 +718,8 @@ var _ball = _interopRequireDefault(require("/src/ball"));
 var _ballUpperLeft = _interopRequireDefault(require("./ballUpperLeft"));
 
 var _ballUpperRight = _interopRequireDefault(require("./ballUpperRight"));
+
+var _canon = _interopRequireDefault(require("./canon"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -636,6 +762,14 @@ function () {
     });
     this.ballUpperRight = new _ballUpperRight.default(this);
     this.paddle = new _world.default(this);
+    this.canonUp1 = new _canon.default(this, 'up1');
+    this.canonUp2 = new _canon.default(this, 'up2');
+    this.canonRight1 = new _canon.default(this, 'right1');
+    this.canonRight2 = new _canon.default(this, 'right2');
+    this.canonDown1 = new _canon.default(this, 'down1');
+    this.canonDown2 = new _canon.default(this, 'down2');
+    this.canonLeft1 = new _canon.default(this, 'left1');
+    this.canonLeft2 = new _canon.default(this, 'left2');
     this.gameObjects = [];
     this.lives = 20;
     this.currentLevel = 0;
@@ -648,7 +782,7 @@ function () {
       if (this.gamestate !== GAMESTATE.MENU && this.gamestate !== GAMESTATE.NEWLEVEL) return; //this.bricks = buildLevel(this, this.levels[this.currentLevel]);
 
       this.ball.reset();
-      this.gameObjects = [this.ball, this.paddle];
+      this.gameObjects = [this.ball, this.paddle, this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2];
       this.gamestate = GAMESTATE.RUNNING;
     }
   }, {
@@ -721,7 +855,7 @@ function () {
 }();
 
 exports.default = Game;
-},{"/src/world":"src/world.js","/src/input":"src/input.js","/src/ball":"src/ball.js","./ballUpperLeft":"src/ballUpperLeft.js","./ballUpperRight":"src/ballUpperRight.js"}],"src/index.js":[function(require,module,exports) {
+},{"/src/world":"src/world.js","/src/input":"src/input.js","/src/ball":"src/ball.js","./ballUpperLeft":"src/ballUpperLeft.js","./ballUpperRight":"src/ballUpperRight.js","./canon":"src/canon.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _game = _interopRequireDefault(require("/src/game"));
@@ -774,7 +908,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63312" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50509" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

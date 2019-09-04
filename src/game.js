@@ -3,6 +3,7 @@ import InputHandler from "/src/input";
 import Ball from "/src/ball";
 import BallUpperLeft from "./ballUpperLeft";
 import BallUpperRight from "./ballUpperRight";
+import Canon from "./canon";
 
 // import { buildLevel, level1, level2 } from "/src/levels";
 
@@ -23,6 +24,14 @@ export default class Game {
     this.ballUpperLeft = new BallUpperLeft(this, {x: 1, y: 2});
     this.ballUpperRight = new BallUpperRight(this);
     this.paddle = new World(this);
+    this.canonUp1 = new Canon(this, 'up1');
+    this.canonUp2 = new Canon(this, 'up2');
+    this.canonRight1 = new Canon(this, 'right1');
+    this.canonRight2 = new Canon(this, 'right2');
+    this.canonDown1 = new Canon(this, 'down1');
+    this.canonDown2 = new Canon(this, 'down2');
+    this.canonLeft1 = new Canon(this, 'left1');
+    this.canonLeft2 = new Canon(this, 'left2');
     this.gameObjects = [];
     this.lives = 20;
 
@@ -42,7 +51,16 @@ export default class Game {
     this.ball.reset();
     this.gameObjects = [
       this.ball, 
-      this.paddle];
+      this.paddle,
+      this.canonUp1,
+      this.canonUp2,
+      this.canonRight1,
+      this.canonRight2,
+      this.canonDown1,
+      this.canonDown2,
+      this.canonLeft1,
+      this.canonLeft2
+    ];
 
     this.gamestate = GAMESTATE.RUNNING;
   }
