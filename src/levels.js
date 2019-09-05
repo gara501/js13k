@@ -1,6 +1,7 @@
 export default class Levels {
   constructor() {
   }
+  
   level1() {
     return [
       { canon: 1, speed: 1 },
