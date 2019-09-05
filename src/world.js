@@ -60,22 +60,18 @@ export default class World {
   }
 
   hitUpperLeft() {
-    console.log('left')
     this.sides.upperLeft.backgroundColor = '#222';
   }
 
   hitUpperRight() {
-    console.log('up')
     this.sides.upperRight.backgroundColor = '#222';
   }
 
   hitLowerLeft() {
-    console.log('down')
     this.sides.lowerLeft.backgroundColor = '#222';
   }
 
   hitLowerRight() {
-    console.log('right')
     this.sides.lowerRight.backgroundColor = '#222';
   }
 

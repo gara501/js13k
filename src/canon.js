@@ -35,14 +35,14 @@ export default class Canon {
         this.backgroundColor = '#FFD700';
         this.position = {
           x: this.gameWidth - this.width,
-          y: this.gameHeight/3 + 50
+          y: this.gameHeight/2 - 50
         };
         break;
       case 'right2':
         this.backgroundColor = '#1E90FF';
         this.position = {
           x: this.gameWidth - this.width,
-          y: this.gameHeight/3 + 150
+          y: this.gameHeight/2 + 50
         };
         break;
       case 'down1':      
@@ -63,14 +63,14 @@ export default class Canon {
         this.backgroundColor = '#FF0000';
         this.position = {
           x: 0,
-          y: this.gameHeight/3 + 50
+          y: this.gameHeight/2 - 50
         };
         break;
       case 'left2':
         this.backgroundColor = '#008000';
         this.position = {
           x: 0,
-          y: this.gameHeight/3 + 150
+          y: this.gameHeight/2 + 50
         };
         break;
       default:
@@ -79,7 +79,6 @@ export default class Canon {
   }
 
   draw(ctx) {
-    console.log('DRAW', this.position.x, this.position.y, this.width, this.height, this.name)
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
   }

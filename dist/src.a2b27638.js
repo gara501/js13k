@@ -195,25 +195,21 @@ function () {
   _createClass(World, [{
     key: "hitUpperLeft",
     value: function hitUpperLeft() {
-      console.log('left');
       this.sides.upperLeft.backgroundColor = '#222';
     }
   }, {
     key: "hitUpperRight",
     value: function hitUpperRight() {
-      console.log('up');
       this.sides.upperRight.backgroundColor = '#222';
     }
   }, {
     key: "hitLowerLeft",
     value: function hitLowerLeft() {
-      console.log('down');
       this.sides.lowerLeft.backgroundColor = '#222';
     }
   }, {
     key: "hitLowerRight",
     value: function hitLowerRight() {
-      console.log('right');
       this.sides.lowerRight.backgroundColor = '#222';
     }
   }, {
@@ -328,7 +324,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.detectCollision = detectCollision;
 
 function detectCollision(ball, gameObject) {
-  console.log(ball);
   var bottomOfBall = ball.position.y + ball.size;
   var topOfBall = ball.position.y;
   var topOfObject = gameObject.position.y;
@@ -342,242 +337,7 @@ function detectCollision(ball, gameObject) {
     return false;
   }
 }
-},{}],"src/ball.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _collisionDetection = require("./collisionDetection");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Ball =
-/*#__PURE__*/
-function () {
-  function Ball(game) {
-    _classCallCheck(this, Ball);
-
-    this.image = document.getElementById("img_ball");
-    this.gameWidth = game.gameWidth;
-    this.gameHeight = game.gameHeight;
-    this.game = game;
-    this.size = 16;
-    this.reset();
-  }
-
-  _createClass(Ball, [{
-    key: "reset",
-    value: function reset() {
-      this.position = {
-        x: 10,
-        y: 400
-      };
-      this.speed = {
-        x: 4,
-        y: -2
-      };
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
-    }
-  }, {
-    key: "update",
-    value: function update(deltaTime) {
-      this.position.x += this.speed.x;
-      this.position.y += this.speed.y; // wall on left or right
-
-      if (this.position.x + this.size > this.gameWidth || this.position.x < 0) {
-        this.speed.x = -this.speed.x;
-      } // wall on top
-
-
-      if (this.position.y < 0) {
-        this.speed.y = -this.speed.y;
-      } // bottom of game
-
-
-      if (this.position.y + this.size > this.gameHeight) {
-        this.game.lives--;
-        this.reset();
-      }
-
-      if ((0, _collisionDetection.detectCollision)(this, this.game.paddle)) {
-        this.speed.y = -this.speed.y;
-        this.position.y = this.game.paddle.position.y - this.size;
-      }
-    }
-  }]);
-
-  return Ball;
-}();
-
-exports.default = Ball;
-},{"./collisionDetection":"src/collisionDetection.js"}],"src/ballUpperLeft.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _collisionDetection = require("./collisionDetection");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var BallUpperLeft =
-/*#__PURE__*/
-function () {
-  function BallUpperLeft(game, position) {
-    _classCallCheck(this, BallUpperLeft);
-
-    this.image = document.getElementById("img_ball");
-    this.gameWidth = game.gameWidth;
-    this.gameHeight = game.gameHeight;
-    this.position = position;
-    this.game = game;
-    this.size = 16;
-    this.reset(position);
-  }
-
-  _createClass(BallUpperLeft, [{
-    key: "reset",
-    value: function reset(position) {
-      this.position = position;
-      this.speed = {
-        x: 10,
-        y: -5
-      };
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
-    }
-  }, {
-    key: "update",
-    value: function update(deltaTime) {
-      this.position.x += this.speed.x;
-      this.position.y += this.speed.y; // wall on left or right
-
-      if (this.position.x + this.size > this.gameWidth / 2 || this.position.x < 0) {
-        this.speed.x = -this.speed.x;
-      } // wall on top
-
-
-      if (this.position.y < 0) {
-        this.speed.y = -this.speed.y;
-      } // bottom of game
-
-
-      if (this.position.y + this.size > this.gameHeight / 2) {
-        this.game.lives--;
-        this.reset();
-      }
-
-      if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
-        this.speed.y = -this.speed.y;
-        this.position.y = this.game.paddle.sides.upperLeft.position.y - this.size;
-      }
-    }
-  }]);
-
-  return BallUpperLeft;
-}();
-
-exports.default = BallUpperLeft;
-},{"./collisionDetection":"src/collisionDetection.js"}],"src/ballUpperRight.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _collisionDetection = require("./collisionDetection");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var BallUpperRight =
-/*#__PURE__*/
-function () {
-  function BallUpperRight(game) {
-    _classCallCheck(this, BallUpperRight);
-
-    this.image = document.getElementById("img_ball");
-    this.gameWidth = game.gameWidth;
-    this.gameHeight = game.gameHeight;
-    this.game = game;
-    this.size = 16;
-    this.reset();
-  }
-
-  _createClass(BallUpperRight, [{
-    key: "reset",
-    value: function reset() {
-      this.position = {
-        x: this.gameWidth - 30,
-        y: 2
-      };
-      this.speed = {
-        x: 10,
-        y: +5
-      };
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
-    }
-  }, {
-    key: "update",
-    value: function update(deltaTime) {
-      this.position.x -= this.speed.x;
-      this.position.y += this.speed.y; // wall on left or right
-
-      if (this.position.x + this.size < this.gameWidth / 2 || this.position.x > this.gameWidth) {
-        this.speed.x = -this.speed.x;
-      } // wall on top
-
-
-      if (this.position.y < 0) {
-        this.speed.y = -this.speed.y;
-      } // bottom of game
-
-
-      if (this.position.y + this.size > this.gameHeight / 2) {
-        this.game.lives--;
-        this.reset();
-      }
-
-      if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
-        this.speed.y = -this.speed.y;
-        this.position.y = this.game.paddle.sides.upperRight.position.y - this.size;
-      }
-    }
-  }]);
-
-  return BallUpperRight;
-}();
-
-exports.default = BallUpperRight;
-},{"./collisionDetection":"src/collisionDetection.js"}],"src/canon.js":[function(require,module,exports) {
+},{}],"src/canon.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -637,7 +397,7 @@ function () {
           this.backgroundColor = '#FFD700';
           this.position = {
             x: this.gameWidth - this.width,
-            y: this.gameHeight / 3 + 50
+            y: this.gameHeight / 2 - 50
           };
           break;
 
@@ -645,7 +405,7 @@ function () {
           this.backgroundColor = '#1E90FF';
           this.position = {
             x: this.gameWidth - this.width,
-            y: this.gameHeight / 3 + 150
+            y: this.gameHeight / 2 + 50
           };
           break;
 
@@ -669,7 +429,7 @@ function () {
           this.backgroundColor = '#FF0000';
           this.position = {
             x: 0,
-            y: this.gameHeight / 3 + 50
+            y: this.gameHeight / 2 - 50
           };
           break;
 
@@ -677,7 +437,7 @@ function () {
           this.backgroundColor = '#008000';
           this.position = {
             x: 0,
-            y: this.gameHeight / 3 + 150
+            y: this.gameHeight / 2 + 50
           };
           break;
 
@@ -688,7 +448,6 @@ function () {
   }, {
     key: "draw",
     value: function draw(ctx) {
-      console.log('DRAW', this.position.x, this.position.y, this.width, this.height, this.name);
       ctx.fillStyle = this.backgroundColor;
       ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
@@ -701,7 +460,312 @@ function () {
 }();
 
 exports.default = Canon;
-},{"./collisionDetection":"src/collisionDetection.js"}],"src/game.js":[function(require,module,exports) {
+},{"./collisionDetection":"src/collisionDetection.js"}],"src/canonBall.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _collisionDetection = require("./collisionDetection");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var CanonBall =
+/*#__PURE__*/
+function () {
+  function CanonBall(game, canon) {
+    _classCallCheck(this, CanonBall);
+
+    this.image = document.getElementById("img_ball");
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameHeight;
+    this.baseSpeed = 1;
+    this.game = game;
+    this.size = 16;
+    this.canon = canon;
+    this.name = canon.name;
+    this.speed = {
+      x: 0,
+      y: 0
+    };
+    this.position = {
+      x: this.canon.position.x,
+      y: this.canon.position.y
+    };
+    this.reset();
+  }
+
+  _createClass(CanonBall, [{
+    key: "reset",
+    value: function reset() {
+      this.position = {
+        x: this.canon.position.x,
+        y: this.canon.position.y
+      };
+      console.log('INTERN CANON', this.position);
+
+      switch (this.canon.name) {
+        case 'up1':
+          this.speed = {
+            x: 0,
+            y: 1 * this.baseSpeed
+          };
+          break;
+
+        case 'up2':
+          this.speed = {
+            x: 0,
+            y: 1 * this.baseSpeed
+          };
+          break;
+
+        case 'right1':
+          this.speed = {
+            x: -1 * this.baseSpeed,
+            y: 0
+          };
+          break;
+
+        case 'right2':
+          this.speed = {
+            x: -1 * this.baseSpeed,
+            y: 0
+          };
+          break;
+
+        case 'down1':
+          this.speed = {
+            x: 0,
+            y: -1 * this.baseSpeed
+          };
+          break;
+
+        case 'down2':
+          this.speed = {
+            x: 0,
+            y: -1 * this.baseSpeed
+          };
+          break;
+
+        case 'left1':
+          this.speed = {
+            x: 1 * this.baseSpeed,
+            y: 0
+          };
+          break;
+
+        case 'left2':
+          this.speed = {
+            x: 1 * this.baseSpeed,
+            y: 0
+          };
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
+    }
+  }, {
+    key: "update",
+    value: function update(deltaTime) {
+      this.position.x += this.speed.x;
+      this.position.y += this.speed.y;
+
+      if (this.name === 'up1' || this.name === 'up2') {
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
+          this.position.y = 0;
+        }
+
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
+          this.position.y = 0;
+        }
+      }
+
+      if (this.name === 'down1' || this.name === 'down2') {
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
+          this.position.y = this.gameHeight;
+        }
+
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
+          this.position.y = this.gameHeight;
+        }
+      }
+
+      if (this.name === 'left1' || this.name === 'left2') {
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
+          this.position.x = 0;
+        }
+
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
+          this.position.x = 0;
+        }
+      }
+
+      if (this.name === 'right1' || this.name === 'right2') {
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
+          this.position.x = this.gameWidth;
+        }
+
+        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
+          this.position.x = this.gameWidth;
+        }
+      }
+      /*
+      // wall on top
+      if (this.position.y < 0) {
+        this.speed.y = -this.speed.y;
+      }
+        // bottom of game
+      if (this.position.y + this.size > this.gameHeight) {
+        this.game.lives--;
+        this.reset();
+      }
+      */
+
+    }
+  }]);
+
+  return CanonBall;
+}();
+
+exports.default = CanonBall;
+},{"./collisionDetection":"src/collisionDetection.js"}],"src/levels.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Levels =
+/*#__PURE__*/
+function () {
+  function Levels() {
+    _classCallCheck(this, Levels);
+  }
+
+  _createClass(Levels, [{
+    key: "level1",
+    value: function level1() {
+      return [{
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 2,
+        speed: 2
+      }, {
+        canon: 3,
+        speed: 2
+      }, {
+        canon: 6,
+        speed: 1
+      }, {
+        canon: 6,
+        speed: 3
+      }, {
+        canon: 7,
+        speed: 1
+      }, {
+        canon: 1,
+        speed: 5
+      }, {
+        canon: 1,
+        speed: 5
+      }, {
+        canon: 2,
+        speed: 6
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 5,
+        speed: 6
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 3,
+        speed: 4
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 6,
+        speed: 3
+      }, {
+        canon: 1,
+        speed: 6
+      }, {
+        canon: 8,
+        speed: 1
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 8,
+        speed: 7
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 8,
+        speed: 8
+      }, {
+        canon: 1,
+        speed: 3
+      }, {
+        canon: 7,
+        speed: 8
+      }, {
+        canon: 5,
+        speed: 8
+      }, {
+        canon: 3,
+        speed: 8
+      }, {
+        canon: 1,
+        speed: 3
+      }, {
+        canon: 4,
+        speed: 2
+      }, {
+        canon: 2,
+        speed: 4
+      }, {
+        canon: 1,
+        speed: 1
+      }, {
+        canon: 6,
+        speed: 2
+      }, {
+        canon: 7,
+        speed: 4
+      }];
+    }
+  }]);
+
+  return Levels;
+}();
+
+exports.default = Levels;
+},{}],"src/game.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -713,13 +777,11 @@ var _world = _interopRequireDefault(require("/src/world"));
 
 var _input = _interopRequireDefault(require("/src/input"));
 
-var _ball = _interopRequireDefault(require("/src/ball"));
-
-var _ballUpperLeft = _interopRequireDefault(require("./ballUpperLeft"));
-
-var _ballUpperRight = _interopRequireDefault(require("./ballUpperRight"));
-
 var _canon = _interopRequireDefault(require("./canon"));
+
+var _canonBall = _interopRequireDefault(require("./canonBall"));
+
+var _levels = _interopRequireDefault(require("./levels"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -755,12 +817,6 @@ function () {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.gamestate = GAMESTATE.MENU;
-    this.ball = new _ball.default(this);
-    this.ballUpperLeft = new _ballUpperLeft.default(this, {
-      x: 1,
-      y: 2
-    });
-    this.ballUpperRight = new _ballUpperRight.default(this);
     this.paddle = new _world.default(this);
     this.canonUp1 = new _canon.default(this, 'up1');
     this.canonUp2 = new _canon.default(this, 'up2');
@@ -770,8 +826,19 @@ function () {
     this.canonDown2 = new _canon.default(this, 'down2');
     this.canonLeft1 = new _canon.default(this, 'left1');
     this.canonLeft2 = new _canon.default(this, 'left2');
+    this.canonBall1 = new _canonBall.default(this, this.canonUp1);
+    this.canonBall2 = new _canonBall.default(this, this.canonUp2);
+    this.canonBall3 = new _canonBall.default(this, this.canonRight1);
+    this.canonBall4 = new _canonBall.default(this, this.canonRight2);
+    this.canonBall5 = new _canonBall.default(this, this.canonDown1);
+    this.canonBall6 = new _canonBall.default(this, this.canonDown2);
+    this.canonBall7 = new _canonBall.default(this, this.canonLeft1);
+    this.canonBall8 = new _canonBall.default(this, this.canonLeft2);
     this.gameObjects = [];
+    this.balls = [];
     this.lives = 20;
+    this.levels = new _levels.default();
+    this.level1 = this.levels.level1();
     this.currentLevel = 0;
     new _input.default(this.paddle, this);
   }
@@ -779,10 +846,50 @@ function () {
   _createClass(Game, [{
     key: "start",
     value: function start() {
-      if (this.gamestate !== GAMESTATE.MENU && this.gamestate !== GAMESTATE.NEWLEVEL) return; //this.bricks = buildLevel(this, this.levels[this.currentLevel]);
+      if (this.gamestate !== GAMESTATE.MENU && this.gamestate !== GAMESTATE.NEWLEVEL) return;
+      this.gameObjects = [this.paddle, this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2]; // Balls Logic
 
-      this.ball.reset();
-      this.gameObjects = [this.ball, this.paddle, this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2];
+      var total = this.level1.length;
+      var that = this;
+      var ballsCounter = 0;
+      var intervalId = setInterval(function () {
+        if (ballsCounter === total) {
+          clearInterval(intervalId);
+        }
+
+        that.balls = [];
+        var ballSelected = that.level1[ballsCounter];
+
+        if (ballSelected.canon === 1) {
+          that.canonBall1.speed = ballSelected.speed;
+          that.balls.push(that.canonBall1);
+        } else if (ballSelected.canon === 2) {
+          that.canonBall2.speed = ballSelected.speed;
+          that.balls.push(that.canonBall2);
+        } else if (ballSelected.canon === 3) {
+          that.canonBall3.speed = ballSelected.speed;
+          that.balls.push(that.canonBall3);
+        } else if (ballSelected.canon === 4) {
+          that.canonBall4.speed = ballSelected.speed;
+          that.balls.push(that.canonBall4);
+        } else if (ballSelected.canon === 5) {
+          that.canonBall5.speed = ballSelected.speed;
+          that.balls.push(that.canonBall5);
+        } else if (ballSelected.canon === 6) {
+          that.canonBall6.speed = ballSelected.speed;
+          that.balls.push(that.canonBall6);
+        } else if (ballSelected.canon === 7) {
+          that.canonBall7.speed = ballSelected.speed;
+          that.balls.push(that.canonBall7);
+        } else {
+          that.canonBall8.speed = ballSelected.speed;
+          that.balls.push(that.canonBall8);
+        }
+
+        console.log('intern', that.balls);
+        ballsCounter++;
+      }, 1000);
+      console.log(this.balls);
       this.gamestate = GAMESTATE.RUNNING;
     }
   }, {
@@ -800,6 +907,10 @@ function () {
 
       _toConsumableArray(this.gameObjects).forEach(function (object) {
         return object.update(deltaTime);
+      });
+
+      _toConsumableArray(this.balls).forEach(function (object) {
+        return object.update(deltaTime);
       }); //this.bricks = this.bricks.filter(brick => !brick.markedForDeletion);
 
     }
@@ -807,6 +918,10 @@ function () {
     key: "draw",
     value: function draw(ctx) {
       _toConsumableArray(this.gameObjects).forEach(function (object) {
+        return object.draw(ctx);
+      });
+
+      _toConsumableArray(this.balls).forEach(function (object) {
         return object.draw(ctx);
       });
 
@@ -849,13 +964,23 @@ function () {
         this.gamestate = GAMESTATE.PAUSED;
       }
     }
+  }, {
+    key: "ballsLogic",
+    value: function ballsLogic() {
+      var base = [{
+        canon: 1,
+        speed: 1
+      }];
+      var randomBall = Math.floor(Math.random() * 8) + 1;
+      console.log('RANDOM', randomBall);
+    }
   }]);
 
   return Game;
 }();
 
 exports.default = Game;
-},{"/src/world":"src/world.js","/src/input":"src/input.js","/src/ball":"src/ball.js","./ballUpperLeft":"src/ballUpperLeft.js","./ballUpperRight":"src/ballUpperRight.js","./canon":"src/canon.js"}],"src/index.js":[function(require,module,exports) {
+},{"/src/world":"src/world.js","/src/input":"src/input.js","./canon":"src/canon.js","./canonBall":"src/canonBall.js","./levels":"src/levels.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _game = _interopRequireDefault(require("/src/game"));
@@ -865,7 +990,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var canvas = document.getElementById("gameScreen");
 var ctx = canvas.getContext("2d");
 var GAME_WIDTH = 800;
-var GAME_HEIGHT = 600;
+var GAME_HEIGHT = 800;
 var game = new _game.default(GAME_WIDTH, GAME_HEIGHT);
 console.log(game);
 var lastTime = 0;
@@ -908,7 +1033,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50509" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50058" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
