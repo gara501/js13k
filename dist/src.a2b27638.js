@@ -139,14 +139,21 @@ function () {
 
     this.gameWidth = game.gameWidth;
     this.gameHeight = game.gameHeight;
+    this.game = game;
     this.width = 100;
     this.height = 100;
+    this.isUpperLeftPressed = false;
+    this.isUpperRightPressed = false;
+    this.isLowerLeftPressed = false;
+    this.isLowerRightPressed = false;
     this.position = {
       x: game.gameWidth / 2 - this.width / 2,
       y: game.gameHeight - this.height
     };
+    this.radiusVal = 80 / game.currentLevel.gamePoints * (game.gamePoints / 2);
+    console.log('LOSPUYNTO', game.gamePoints);
     this.core = {
-      radius: 50,
+      radius: this.radiusVal,
       position: {
         x: game.gameWidth / 2,
         y: game.gameHeight / 2
@@ -196,39 +203,47 @@ function () {
     key: "hitUpperLeft",
     value: function hitUpperLeft() {
       this.sides.upperLeft.backgroundColor = '#222';
+      this.isUpperLeftPressed = true;
     }
   }, {
     key: "hitUpperRight",
     value: function hitUpperRight() {
       this.sides.upperRight.backgroundColor = '#222';
+      this.isUpperRightPressed = true;
     }
   }, {
     key: "hitLowerLeft",
     value: function hitLowerLeft() {
       this.sides.lowerLeft.backgroundColor = '#222';
+      this.isLowerLeftPressed = true;
     }
   }, {
     key: "hitLowerRight",
     value: function hitLowerRight() {
       this.sides.lowerRight.backgroundColor = '#222';
+      this.isLowerRightPressed = true;
     }
   }, {
     key: "releasePaddle",
     value: function releasePaddle(key) {
       if (key === 'upperLeft') {
         this.sides.upperLeft.backgroundColor = '#FF0000';
+        this.isUpperLeftPressed = false;
       }
 
       if (key === 'upperRight') {
         this.sides.upperRight.backgroundColor = '#FFD700';
+        this.isUpperRightPressed = false;
       }
 
       if (key === 'lowerLeft') {
         this.sides.lowerLeft.backgroundColor = '#008000';
+        this.isLowerLeftPressed = false;
       }
 
       if (key === 'lowerRight') {
         this.sides.lowerRight.backgroundColor = '#1E90FF';
+        this.isLowerRightPressed = false;
       }
     }
   }, {
@@ -246,7 +261,10 @@ function () {
     }
   }, {
     key: "update",
-    value: function update(deltaTime) {}
+    value: function update(deltaTime) {
+      this.radiusVal = 80 / this.game.currentLevel.gamePoints * (this.game.gamePoints / 2);
+      this.core.radius = this.radiusVal;
+    }
   }]);
 
   return World;
@@ -264,24 +282,63 @@ exports.default = void 0;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var InputHandler = function InputHandler(paddle, game) {
+  var _this = this;
+
   _classCallCheck(this, InputHandler);
 
+  this.upperLeft = false;
+  this.upperRight = false;
+  this.lowerLeft = false;
+  this.lowerRight = false;
+  this.time = 250;
   document.addEventListener("keydown", function (event) {
     switch (event.keyCode) {
       case 65:
-        paddle.hitUpperLeft();
+        if (!_this.upperLeft) {
+          paddle.hitUpperLeft();
+          _this.upperLeft = true;
+        }
+
+        setTimeout(function () {
+          _this.upperLeft = false;
+          paddle.releasePaddle('upperLeft');
+        }, _this.time);
         break;
 
       case 74:
-        paddle.hitLowerLeft();
+        if (!_this.upperLeft) {
+          paddle.hitLowerLeft();
+          _this.upperLeft = true;
+        }
+
+        setTimeout(function () {
+          _this.upperLeft = false;
+          paddle.releasePaddle('lowerLeft');
+        }, _this.time);
         break;
 
       case 83:
-        paddle.hitUpperRight();
+        if (!_this.upperLeft) {
+          paddle.hitUpperRight();
+          _this.upperLeft = true;
+        }
+
+        setTimeout(function () {
+          _this.upperLeft = false;
+          paddle.releasePaddle('upperRight');
+        }, _this.time);
         break;
 
       case 75:
-        paddle.hitLowerRight();
+        if (!_this.upperLeft) {
+          paddle.hitLowerRight();
+          _this.upperLeft = true;
+        }
+
+        setTimeout(function () {
+          _this.upperLeft = false;
+          paddle.releasePaddle('lowerRight');
+        }, _this.time);
         break;
 
       case 13:
@@ -479,13 +536,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var CanonBall =
 /*#__PURE__*/
 function () {
-  function CanonBall(game, canon) {
+  function CanonBall(game, canon, baseSpeed) {
     _classCallCheck(this, CanonBall);
 
     this.image = document.getElementById("img_ball");
     this.gameWidth = game.gameWidth;
     this.gameHeight = game.gameHeight;
-    this.baseSpeed = 1;
+    this.baseSpeed = baseSpeed;
     this.game = game;
     this.size = 16;
     this.canon = canon;
@@ -495,8 +552,8 @@ function () {
       y: 0
     };
     this.position = {
-      x: this.canon.position.x,
-      y: this.canon.position.y
+      x: canon.position.x,
+      y: canon.position.y
     };
     this.reset();
   }
@@ -504,37 +561,37 @@ function () {
   _createClass(CanonBall, [{
     key: "reset",
     value: function reset() {
+      /*
       this.position = {
         x: this.canon.position.x,
         y: this.canon.position.y
       };
-      console.log('INTERN CANON', this.position);
-
+      */
       switch (this.canon.name) {
         case 'up1':
           this.speed = {
             x: 0,
-            y: 1 * this.baseSpeed
+            y: 2 * this.baseSpeed
           };
           break;
 
         case 'up2':
           this.speed = {
             x: 0,
-            y: 1 * this.baseSpeed
+            y: 2 * this.baseSpeed
           };
           break;
 
         case 'right1':
           this.speed = {
-            x: -1 * this.baseSpeed,
+            x: -2 * this.baseSpeed,
             y: 0
           };
           break;
 
         case 'right2':
           this.speed = {
-            x: -1 * this.baseSpeed,
+            x: -2 * this.baseSpeed,
             y: 0
           };
           break;
@@ -542,27 +599,27 @@ function () {
         case 'down1':
           this.speed = {
             x: 0,
-            y: -1 * this.baseSpeed
+            y: -2 * this.baseSpeed
           };
           break;
 
         case 'down2':
           this.speed = {
             x: 0,
-            y: -1 * this.baseSpeed
+            y: -2 * this.baseSpeed
           };
           break;
 
         case 'left1':
           this.speed = {
-            x: 1 * this.baseSpeed,
+            x: 2 * this.baseSpeed,
             y: 0
           };
           break;
 
         case 'left2':
           this.speed = {
-            x: 1 * this.baseSpeed,
+            x: 2 * this.baseSpeed,
             y: 0
           };
           break;
@@ -574,7 +631,9 @@ function () {
   }, {
     key: "draw",
     value: function draw(ctx) {
-      ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
+      if (this.game.isShooting) {
+        ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
+      }
     }
   }, {
     key: "update",
@@ -582,51 +641,130 @@ function () {
       this.position.x += this.speed.x;
       this.position.y += this.speed.y;
 
-      if (this.name === 'up1' || this.name === 'up2') {
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
-          this.position.y = 0;
-        }
+      switch (this.name) {
+        case 'up1':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
+            this.position.y *= -1;
+            this.game.isShooting = false;
 
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
-          this.position.y = 0;
-        }
-      }
+            if (this.game.paddle.isUpperLeftPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
 
-      if (this.name === 'down1' || this.name === 'down2') {
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
-          this.position.y = this.gameHeight;
-        }
+          break;
 
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
-          this.position.y = this.gameHeight;
-        }
-      }
+        case 'up2':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
+            this.position.y *= -1;
+            this.game.isShooting = false;
 
-      if (this.name === 'left1' || this.name === 'left2') {
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
-          this.position.x = 0;
-        }
+            if (this.game.paddle.isUpperRightPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
 
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
-          this.position.x = 0;
-        }
-      }
+          break;
 
-      if (this.name === 'right1' || this.name === 'right2') {
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
-          this.position.x = this.gameWidth;
-        }
+        case 'down1':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
+            this.position.y *= -1;
+            this.game.isShooting = false;
 
-        if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
-          this.position.x = this.gameWidth;
-        }
+            if (this.game.paddle.isLowerLeftPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        case 'down2':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
+            this.position.y *= -1;
+            this.game.isShooting = false;
+
+            if (this.game.paddle.isLowerRightPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              console.log('ELSE', this.game.gamePoints);
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        case 'left1':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperLeft)) {
+            this.position.x *= -1;
+            this.game.isShooting = false;
+
+            if (this.game.paddle.isUpperLeftPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        case 'left2':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerLeft)) {
+            this.position.x *= -1;
+            this.game.isShooting = false;
+
+            if (this.game.paddle.isLowerLeftPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        case 'right1':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.upperRight)) {
+            this.position.x *= -1;
+            this.game.isShooting = false;
+
+            if (this.game.paddle.isUpperRightPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        case 'right2':
+          if ((0, _collisionDetection.detectCollision)(this, this.game.paddle.sides.lowerRight)) {
+            this.position.x *= -1;
+            this.game.isShooting = false;
+            console.log('Lower Right Pressed', this.game.paddle.isLowerRightPressed);
+
+            if (this.game.paddle.isLowerRightPressed) {
+              this.game.gamePoints += 1;
+            } else {
+              this.game.gamePoints -= 1;
+            }
+          }
+
+          break;
+
+        default:
+          break;
       }
       /*
       // wall on top
       if (this.position.y < 0) {
         this.speed.y = -this.speed.y;
       }
-        // bottom of game
+       // bottom of game
       if (this.position.y + this.size > this.gameHeight) {
         this.game.lives--;
         this.reset();
@@ -662,101 +800,14 @@ function () {
   }
 
   _createClass(Levels, [{
-    key: "level1",
-    value: function level1() {
+    key: "levels",
+    value: function levels() {
       return [{
-        canon: 1,
-        speed: 1
+        level: 1,
+        gamePoints: 10
       }, {
-        canon: 2,
-        speed: 2
-      }, {
-        canon: 3,
-        speed: 2
-      }, {
-        canon: 6,
-        speed: 1
-      }, {
-        canon: 6,
-        speed: 3
-      }, {
-        canon: 7,
-        speed: 1
-      }, {
-        canon: 1,
-        speed: 5
-      }, {
-        canon: 1,
-        speed: 5
-      }, {
-        canon: 2,
-        speed: 6
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 5,
-        speed: 6
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 3,
-        speed: 4
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 6,
-        speed: 3
-      }, {
-        canon: 1,
-        speed: 6
-      }, {
-        canon: 8,
-        speed: 1
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 8,
-        speed: 7
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 8,
-        speed: 8
-      }, {
-        canon: 1,
-        speed: 3
-      }, {
-        canon: 7,
-        speed: 8
-      }, {
-        canon: 5,
-        speed: 8
-      }, {
-        canon: 3,
-        speed: 8
-      }, {
-        canon: 1,
-        speed: 3
-      }, {
-        canon: 4,
-        speed: 2
-      }, {
-        canon: 2,
-        speed: 4
-      }, {
-        canon: 1,
-        speed: 1
-      }, {
-        canon: 6,
-        speed: 2
-      }, {
-        canon: 7,
-        speed: 4
+        level: 2,
+        gamePoints: 20
       }];
     }
   }]);
@@ -817,6 +868,11 @@ function () {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.gamestate = GAMESTATE.MENU;
+    this.levelsObj = new _levels.default();
+    this.levels = this.levelsObj.levels();
+    this.currentLevelIndex = 0;
+    this.currentLevel = this.levels[this.currentLevelIndex];
+    this.gamePoints = this.currentLevel.gamePoints;
     this.paddle = new _world.default(this);
     this.canonUp1 = new _canon.default(this, 'up1');
     this.canonUp2 = new _canon.default(this, 'up2');
@@ -835,75 +891,48 @@ function () {
     this.canonBall7 = new _canonBall.default(this, this.canonLeft1);
     this.canonBall8 = new _canonBall.default(this, this.canonLeft2);
     this.gameObjects = [];
+    this.isShooting = false;
     this.balls = [];
-    this.lives = 20;
-    this.levels = new _levels.default();
-    this.level1 = this.levels.level1();
-    this.currentLevel = 0;
     new _input.default(this.paddle, this);
   }
 
   _createClass(Game, [{
     key: "start",
     value: function start() {
+      var _this = this;
+
       if (this.gamestate !== GAMESTATE.MENU && this.gamestate !== GAMESTATE.NEWLEVEL) return;
-      this.gameObjects = [this.paddle, this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2]; // Balls Logic
+      this.gameObjects = [this.paddle, this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2];
+      this.canonBalls = [this.canonUp1, this.canonUp2, this.canonRight1, this.canonRight2, this.canonDown1, this.canonDown2, this.canonLeft1, this.canonLeft2];
+      setInterval(function () {
+        var activeCanon = _this.canonBalls[Math.floor(Math.random() * _this.canonBalls.length)];
 
-      var total = this.level1.length;
-      var that = this;
-      var ballsCounter = 0;
-      var intervalId = setInterval(function () {
-        if (ballsCounter === total) {
-          clearInterval(intervalId);
+        var ballSpeed = Math.floor(Math.random() * 5) + 1;
+        var activeBall = new _canonBall.default(_this, activeCanon, ballSpeed);
+        console.log(activeBall.baseSpeed);
+
+        if (!_this.isShooting) {
+          _this.balls = [activeBall];
+          _this.isShooting = true;
         }
-
-        that.balls = [];
-        var ballSelected = that.level1[ballsCounter];
-
-        if (ballSelected.canon === 1) {
-          that.canonBall1.speed = ballSelected.speed;
-          that.balls.push(that.canonBall1);
-        } else if (ballSelected.canon === 2) {
-          that.canonBall2.speed = ballSelected.speed;
-          that.balls.push(that.canonBall2);
-        } else if (ballSelected.canon === 3) {
-          that.canonBall3.speed = ballSelected.speed;
-          that.balls.push(that.canonBall3);
-        } else if (ballSelected.canon === 4) {
-          that.canonBall4.speed = ballSelected.speed;
-          that.balls.push(that.canonBall4);
-        } else if (ballSelected.canon === 5) {
-          that.canonBall5.speed = ballSelected.speed;
-          that.balls.push(that.canonBall5);
-        } else if (ballSelected.canon === 6) {
-          that.canonBall6.speed = ballSelected.speed;
-          that.balls.push(that.canonBall6);
-        } else if (ballSelected.canon === 7) {
-          that.canonBall7.speed = ballSelected.speed;
-          that.balls.push(that.canonBall7);
-        } else {
-          that.canonBall8.speed = ballSelected.speed;
-          that.balls.push(that.canonBall8);
-        }
-
-        console.log('intern', that.balls);
-        ballsCounter++;
-      }, 1000);
-      console.log(this.balls);
+      }, 700);
       this.gamestate = GAMESTATE.RUNNING;
     }
   }, {
     key: "update",
     value: function update(deltaTime) {
-      if (this.lives === 0) this.gamestate = GAMESTATE.GAMEOVER;
+      if (this.gamePoints === 0) this.gamestate = GAMESTATE.GAMEOVER;
       if (this.gamestate === GAMESTATE.PAUSED || this.gamestate === GAMESTATE.MENU || this.gamestate === GAMESTATE.GAMEOVER) return;
-      /*
-          if (this.bricks.length === 0) {
-            this.currentLevel++;
-            this.gamestate = GAMESTATE.NEWLEVEL;
-            this.start();
-          }
-      */
+
+      if (this.gamePoints === this.currentLevel.gamePoints * 2) {
+        if (this.currentLevelIndex < this.levels.length) {
+          this.currentLevelIndex++;
+          this.gamestate = GAMESTATE.NEWLEVEL;
+          this.start();
+        } else {
+          this.gamestate = GAMESTATE.MENU;
+        }
+      }
 
       _toConsumableArray(this.gameObjects).forEach(function (object) {
         return object.update(deltaTime);
@@ -924,6 +953,8 @@ function () {
       _toConsumableArray(this.balls).forEach(function (object) {
         return object.draw(ctx);
       });
+
+      console.log('POINTS', this.gamePoints);
 
       if (this.gamestate === GAMESTATE.PAUSED) {
         ctx.rect(0, 0, this.gameWidth, this.gameHeight);
@@ -1033,7 +1064,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50058" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49494" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

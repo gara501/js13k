@@ -18,7 +18,12 @@ export default class Game {
   constructor(gameWidth, gameHeight) {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
-    this.gamestate = GAMESTATE.MENU;    
+    this.gamestate = GAMESTATE.MENU;
+    this.levelsObj = new Levels();
+    this.levels = this.levelsObj.levels();
+    this.currentLevelIndex = 0;
+    this.currentLevel = this.levels[this.currentLevelIndex];
+    this.gamePoints = this.currentLevel.gamePoints;
     this.paddle = new World(this);
     this.canonUp1 = new Canon(this, 'up1');
     this.canonUp2 = new Canon(this, 'up2');
@@ -37,12 +42,11 @@ export default class Game {
     this.canonBall7 = new CanonBall(this, this.canonLeft1);
     this.canonBall8 = new CanonBall(this, this.canonLeft2);
     this.gameObjects = [];
-    this.balls = [];
-    this.lives = 20;
-    this.levels = new Levels();
-    this.level1 = this.levels.level1();
 
-    this.currentLevel = 0;
+    this.isShooting = false;
+    this.balls = [];
+    
+    
 
     new InputHandler(this.paddle, this);
   }
@@ -66,55 +70,37 @@ export default class Game {
       this.canonLeft2
     ];
 
-   // Balls Logic
-    var total = this.level1.length;
-    var that = this;
-    var ballsCounter = 0;
-    var intervalId = setInterval(function(){
-      if (ballsCounter === total) {
-        clearInterval(intervalId);
+    this.canonBalls = [
+      this.canonUp1,
+      this.canonUp2,
+      this.canonRight1,
+      this.canonRight2,
+      this.canonDown1,
+      this.canonDown2,
+      this.canonLeft1,
+      this.canonLeft2
+    ];
+    
+    
+    setInterval(()=> {
+      let activeCanon = this.canonBalls[Math.floor(Math.random() * this.canonBalls.length)];
+      let ballSpeed = Math.floor(Math.random() * 5) + 1 ;
+      let activeBall =  new CanonBall(this, activeCanon, ballSpeed);
+      
+      console.log(activeBall.baseSpeed);
+      if (!this.isShooting) {
+        this.balls = [
+          activeBall
+        ]
+        this.isShooting = true;
       }
-      that.balls = [];
-      var ballSelected = that.level1[ballsCounter];
-      if (ballSelected.canon === 1) {
-        that.canonBall1.speed = ballSelected.speed;
-        that.balls.push(that.canonBall1);
-      } else if (ballSelected.canon === 2) {
-        that.canonBall2.speed = ballSelected.speed;
-        that.balls.push(that.canonBall2);
-      } else if (ballSelected.canon === 3) {
-        that.canonBall3.speed = ballSelected.speed;
-        that.balls.push(that.canonBall3);
-      } else if (ballSelected.canon === 4) {
-        that.canonBall4.speed = ballSelected.speed;
-        that.balls.push(that.canonBall4);
-      } else if (ballSelected.canon === 5) {
-        that.canonBall5.speed = ballSelected.speed;
-        that.balls.push(that.canonBall5);
-      } else if (ballSelected.canon === 6) {
-        that.canonBall6.speed = ballSelected.speed;
-        that.balls.push(that.canonBall6);
-      } else if (ballSelected.canon === 7) {
-        that.canonBall7.speed = ballSelected.speed;
-        that.balls.push(that.canonBall7);
-      } else {
-        that.canonBall8.speed = ballSelected.speed;
-        that.balls.push(that.canonBall8);
-      }
-      console.log('intern', that.balls)
-      ballsCounter++;
-    }, 1000)
-    console.log(this.balls)
-
+    }, 700)
    
-    
-    
-
     this.gamestate = GAMESTATE.RUNNING;
   }
 
   update(deltaTime) {
-    if (this.lives === 0) this.gamestate = GAMESTATE.GAMEOVER;
+    if (this.gamePoints === 0) this.gamestate = GAMESTATE.GAMEOVER;
 
     if (
       this.gamestate === GAMESTATE.PAUSED ||
@@ -122,17 +108,22 @@ export default class Game {
       this.gamestate === GAMESTATE.GAMEOVER
     )
       return;
-/*
-    if (this.bricks.length === 0) {
-      this.currentLevel++;
-      this.gamestate = GAMESTATE.NEWLEVEL;
-      this.start();
+
+    if (this.gamePoints === this.currentLevel.gamePoints * 2) {
+      if (this.currentLevelIndex < this.levels.length) {
+        this.currentLevelIndex++;
+        this.gamestate = GAMESTATE.NEWLEVEL;
+        this.start();
+      } else {
+        this.gamestate = GAMESTATE.MENU;
+      }
     }
-*/
+
     [...this.gameObjects].forEach(object =>
       object.update(deltaTime)
     );
     
+
     [...this.balls].forEach(object =>
       object.update(deltaTime)
     );
@@ -143,7 +134,7 @@ export default class Game {
   draw(ctx) {
     [...this.gameObjects].forEach(object => object.draw(ctx));
     [...this.balls].forEach(object => object.draw(ctx));
-
+    console.log('POINTS', this.gamePoints);
     if (this.gamestate === GAMESTATE.PAUSED) {
       ctx.rect(0, 0, this.gameWidth, this.gameHeight);
       ctx.fillStyle = "rgba(0,0,0,0.5)";

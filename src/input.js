@@ -1,21 +1,63 @@
 export default class InputHandler {
   constructor(paddle, game) {
+    this.upperLeft = false;
+    this.upperRight = false;
+    this.lowerLeft = false;
+    this.lowerRight = false;
+    this.time = 250;
+
     document.addEventListener("keydown", event => {
       switch (event.keyCode) {
         case 65:
-          paddle.hitUpperLeft();
+          if (!this.upperLeft) {
+            paddle.hitUpperLeft();
+            this.upperLeft = true;
+          }
+          
+          setTimeout(() => { 
+            this.upperLeft = false;
+            paddle.releasePaddle('upperLeft');
+          }, this.time);
+          
           break;
 
         case 74:
-          paddle.hitLowerLeft();
+          if (!this.upperLeft) {
+            paddle.hitLowerLeft();
+            this.upperLeft = true;
+          }
+          
+          setTimeout(() => { 
+            this.upperLeft = false;
+            paddle.releasePaddle('lowerLeft');
+          }, this.time);
+          
           break;
 
         case 83:
-          paddle.hitUpperRight();
+          if (!this.upperLeft) {
+            paddle.hitUpperRight();
+            this.upperLeft = true;
+          }
+          
+          setTimeout(() => { 
+            this.upperLeft = false;
+            paddle.releasePaddle('upperRight');
+          }, this.time);
+          
           break;
         
         case 75:
-          paddle.hitLowerRight();
+          if (!this.upperLeft) {
+            paddle.hitLowerRight();
+            this.upperLeft = true;
+          }
+          
+          setTimeout(() => { 
+            this.upperLeft = false;
+            paddle.releasePaddle('lowerRight');
+          }, this.time);
+          
           break;
 
         case 13:
